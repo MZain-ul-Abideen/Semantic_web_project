@@ -1,39 +1,4 @@
-# Python virtual environments
+data/*
+!data/.gitkeep
+
 venv/
-.env
-*.pyc
-__pycache__/
-*.pyo
-*.pyd
-.Python
-
-# Big data folders - ignore everything inside
-# Ignore everything in data/ ...
-data/**
-
-# ... except these placeholder files that keep folder structure
-!data/**/.gitkeep
-!data/**/.keep          # optional alternative name
-
-# Common big files
-*.csv
-*.parquet
-*.feather
-*.h5
-*.pickle
-*.pkl
-*.joblib
-*.zip
-*.tar
-*.gz
-*.db
-*.sqlite
-*.sqlite3
-
-# OS / Editor junk
-.DS_Store
-Thumbs.db
-.vscode/
-.idea/
-*.swp
-*~
