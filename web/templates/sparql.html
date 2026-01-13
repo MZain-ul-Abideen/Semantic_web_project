@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Merriweather:wght@300;400;700&display=swap"
+      rel="stylesheet"
+    />
+    <title>SPARQL Query Interface - Tolkien Gateway KG</title>
+    <style>
+      body {
+        font-family: "Merriweather", serif;
+        margin: 0;
+        padding: 0;
+        background-color: #0f1411;
+        color: #e6e6e6;
+        min-height: 100vh;
+      }
+
+      .container {
+        max-width: 1400px;
+        margin: 40px auto;
+        padding: 20px;
+      }
+
+      header {
+        background-color: #1b2320;
+        border-radius: 10px;
+        padding: 20px 30px;
+        margin-bottom: 30px;
+        border: 1px solid #2c3a34;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      h1 {
+        font-family: "Cinzel", serif;
+        color: #e9f3edff;
+        margin: 0;
+        font-size: 1.8em;
+      }
+
+      .home-link {
+        background-color: #c2a14d;
+        color: #0f1411;
+        padding: 10px 20px;
+        border-radius: 6px;
+        text-decoration: none;
+        font-weight: bold;
+        transition: background-color 0.2s;
+      }
+
+      .home-link:hover {
+        background-color: #d4b360;
+      }
+
+      .query-section {
+        background-color: #1b2320;
+        border-radius: 10px;
+        padding: 30px;
+        border: 1px solid #2c3a34;
+        margin-bottom: 20px;
+      }
+
+      .controls {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+      }
+
+      label {
+        color: #c2a14d;
+        font-weight: bold;
+        margin-right: 10px;
+      }
+
+      select {
+        background-color: #16201c;
+        color: #e6e6e6;
+        border: 1px solid #2c3a34;
+        padding: 8px 15px;
+        border-radius: 6px;
+        font-family: "Merriweather", serif;
+      }
+
+      textarea {
+        width: 100%;
+        height: 300px;
+        background-color: #16201c;
+        color: #e6e6e6;
+        border: 1px solid #2c3a34;
+        border-radius: 8px;
+        padding: 15px;
+        font-family: "Courier New", monospace;
+        font-size: 14px;
+        resize: vertical;
+        box-sizing: border-box;
+      }
+
+      .button-group {
+        display: flex;
+        gap: 15px;
+        margin-top: 20px;
+      }
+
+      button {
+        background-color: #c2a14d;
+        color: #0f1411;
+        border: none;
+        padding: 12px 30px;
+        border-radius: 6px;
+        font-family: "Cinzel", serif;
+        font-size: 1em;
+        cursor: pointer;
+        font-weight: bold;
+        transition: background-color 0.2s;
+      }
+
+      button:hover {
+        background-color: #d4b360;
+      }
+
+      button.secondary {
+        background-color: #2c3a34;
+        color: #e6e6e6;
+      }
+
+      button.secondary:hover {
+        background-color: #3a4a44;
+      }
+
+      .examples {
+        background-color: #16201c;
+        padding: 20px;
+        border-radius: 8px;
+        margin-top: 20px;
+      }
+
+      .examples h3 {
+        font-family: "Cinzel", serif;
+        color: #c2a14d;
+        margin-top: 0;
+      }
+
+      .example-query {
+        background-color: #0f1411;
+        padding: 10px 15px;
+        border-radius: 6px;
+        margin-bottom: 15px;
+        cursor: pointer;
+        transition: border-left 0.2s;
+        border-left: 4px solid transparent;
+      }
+
+      .example-query:hover {
+        border-left: 4px solid #c2a14d;
+      }
+
+      .example-title {
+        color: #c2a14d;
+        font-weight: bold;
+        margin-bottom: 5px;
+      }
+
+      .example-code {
+        color: #a0a0a0;
+        font-family: "Courier New", monospace;
+        font-size: 0.85em;
+      }
+
+      .results-section {
+        background-color: #1b2320;
+        border-radius: 10px;
+        padding: 30px;
+        border: 1px solid #2c3a34;
+        display: none;
+      }
+
+      .results-section.show {
+        display: block;
+      }
+
+      .results-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid #2c3a34;
+      }
+
+      .results-header h2 {
+        font-family: "Cinzel", serif;
+        color: #e9f3edff;
+        margin: 0;
+      }
+
+      .result-count {
+        color: #c2a14d;
+        font-size: 0.9em;
+      }
+
+      .table-container {
+        width: 100%;
+        overflow-x: auto;
+        margin-top: 20px;
+        border-radius: 8px;
+        border: 1px solid #2c3a34;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 600px;
+      }
+
+      th,
+      td {
+        padding: 12px;
+        text-align: left;
+        border-bottom: 1px solid #2c3a34;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 400px;
+      }
+
+      th {
+        background-color: #16201c;
+        color: #c2a14d;
+        font-weight: bold;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+      }
+
+      tr:hover {
+        background-color: #16201c;
+      }
+
+      td a {
+        color: #c2a14d;
+        text-decoration: none;
+      }
+
+      td a:hover {
+        text-decoration: underline;
+      }
+
+      .pagination {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 2px solid #2c3a34;
+      }
+
+      .pagination-info {
+        color: #a0a0a0;
+      }
+
+      .pagination-controls {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+
+      .pagination button {
+        padding: 8px 16px;
+        font-size: 0.9em;
+      }
+
+      .pagination button:disabled {
+        background-color: #2c3a34;
+        color: #666;
+        cursor: not-allowed;
+        opacity: 0.5;
+      }
+
+      .page-input {
+        width: 60px;
+        background-color: #16201c;
+        color: #e6e6e6;
+        border: 1px solid #2c3a34;
+        padding: 6px 10px;
+        border-radius: 6px;
+        text-align: center;
+        font-family: "Merriweather", serif;
+      }
+
+      .error {
+        background-color: #3a1616;
+        border-left: 4px solid #c24d4d;
+        padding: 20px;
+        border-radius: 8px;
+        color: #ffcccc;
+      }
+
+      .loading {
+        text-align: center;
+        padding: 40px;
+        color: #c2a14d;
+      }
+
+      .spinner {
+        border: 3px solid #2c3a34;
+        border-top: 3px solid #c2a14d;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 20px;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      pre {
+        background-color: #0f1411;
+        padding: 15px;
+        border-radius: 6px;
+        overflow-x: auto;
+        color: #e6e6e6;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>SPARQL Query Interface</h1>
+        <a href="/" class="home-link">← Back to Home</a>
+      </header>
+
+      <div class="query-section">
+        <div class="controls">
+          <div>
+            <label for="outputFormat">Output Format:</label>
+            <select id="outputFormat">
+              <option value="table">Table</option>
+              <option value="json">JSON</option>
+              <option value="turtle">Turtle (CONSTRUCT only)</option>
+            </select>
+          </div>
+        </div>
+
+        <textarea
+          id="queryInput"
+          placeholder="Enter your SPARQL query here..."
+        >PREFIX schema: <http://schema.org/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX tgr: <http://tolkiengateway.semanticweb.org/resource/>
+
+SELECT ?person ?name WHERE {
+  ?person a schema:Person ;
+          rdfs:label ?name .
+} LIMIT 10</textarea
+        >
+
+        <div class="button-group">
+          <button onclick="executeQuery()">Execute Query</button>
+          <button class="secondary" onclick="clearQuery()">Clear</button>
+        </div>
+
+        <div class="examples">
+          <h3>Example Queries</h3>
+
+          <div
+            class="example-query"
+            onclick="loadExample(this)"
+            data-query="PREFIX schema: <http://schema.org/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT ?person ?name WHERE {
+  ?person a schema:Person ;
+          rdfs:label ?name .
+} LIMIT 10"
+          >
+            <div class="example-title">List all persons</div>
+            <div class="example-code">SELECT all schema:Person entities</div>
+          </div>
+
+          <div
+            class="example-query"
+            onclick="loadExample(this)"
+            data-query="PREFIX tgr: <http://tolkiengateway.semanticweb.org/resource/>
+PREFIX schema: <http://schema.org/>
+
+SELECT ?property ?value WHERE {
+  tgr:Gandalf ?property ?value .
+}"
+          >
+            <div class="example-title">Get all properties of Gandalf</div>
+            <div class="example-code">SELECT properties and values</div>
+          </div>
+
+          <div
+            class="example-query"
+            onclick="loadExample(this)"
+            data-query="PREFIX schema: <http://schema.org/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT ?entity ?image WHERE {
+  ?entity schema:image ?image .
+} LIMIT 20"
+          >
+            <div class="example-title">Find entities with images</div>
+            <div class="example-code">SELECT entities that have images</div>
+          </div>
+
+          <div
+            class="example-query"
+            onclick="loadExample(this)"
+            data-query="PREFIX tgr: <http://tolkiengateway.semanticweb.org/resource/>
+PREFIX schema: <http://schema.org/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+CONSTRUCT {
+  tgr:Aragorn ?p ?o .
+} WHERE {
+  tgr:Aragorn ?p ?o .
+}"
+          >
+            <div class="example-title">CONSTRUCT query for Aragorn</div>
+            <div class="example-code">
+              Get RDF triples (use Turtle format)
+            </div>
+          </div>
+
+          <div
+            class="example-query"
+            onclick="loadExample(this)"
+            data-query="PREFIX schema: <http://schema.org/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX tgprop: <http://tolkiengateway.semanticweb.org/property/>
+
+SELECT ?person ?name ?house WHERE {
+  ?person a schema:Person ;
+          rdfs:label ?name ;
+          tgprop:house ?house .
+} LIMIT 15"
+          >
+            <div class="example-title">Find people and their houses</div>
+            <div class="example-code">
+              SELECT persons with house affiliations
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="resultsSection" class="results-section">
+        <div class="results-header">
+          <h2>Query Results</h2>
+          <span class="result-count" id="resultCount"></span>
+        </div>
+        <div id="resultsContent"></div>
+      </div>
+    </div>
+
+    <script>
+      // Pagination state
+      let currentPage = 1;
+      let itemsPerPage = 50;
+      let allResults = [];
+
+      function loadExample(element) {
+        const query = element.getAttribute("data-query");
+        document.getElementById("queryInput").value = query;
+      }
+
+      function clearQuery() {
+        document.getElementById("queryInput").value = "";
+        document.getElementById("resultsSection").classList.remove("show");
+        currentPage = 1;
+        allResults = [];
+      }
+
+      async function executeQuery() {
+        const query = document.getElementById("queryInput").value.trim();
+        const format = document.getElementById("outputFormat").value;
+
+        if (!query) {
+          alert("Please enter a SPARQL query");
+          return;
+        }
+
+        const resultsSection = document.getElementById("resultsSection");
+        const resultsContent = document.getElementById("resultsContent");
+        const resultCount = document.getElementById("resultCount");
+
+        // Show loading state
+        resultsSection.classList.add("show");
+        resultsContent.innerHTML = `
+          <div class="loading">
+            <div class="spinner"></div>
+            <div>Executing query...</div>
+          </div>
+        `;
+
+        try {
+          const formData = new FormData();
+          formData.append("query", query);
+          formData.append("format", format);
+
+          const response = await fetch("/sparql/query", {
+            method: "POST",
+            body: formData,
+          });
+
+          if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.error || "Query failed");
+          }
+
+          // Handle different response types based on content-type
+          const contentType = response.headers.get("content-type");
+          
+          if (contentType && contentType.includes("text/turtle")) {
+            // Turtle format
+            const text = await response.text();
+            resultsContent.innerHTML = `<pre>${escapeHtml(text)}</pre>`;
+            resultCount.textContent = "";
+          } else if (contentType && contentType.includes("application/ld+json")) {
+            // JSON-LD format (from CONSTRUCT queries with JSON output)
+            const text = await response.text();
+            const formatted = JSON.stringify(JSON.parse(text), null, 2);
+            resultsContent.innerHTML = `<pre>${escapeHtml(formatted)}</pre>`;
+            resultCount.textContent = "";
+          } else {
+            // JSON format - could be SELECT/ASK results
+            const data = await response.json();
+            
+            // Check if user wants raw JSON output
+            if (format === 'json') {
+              // User wants raw JSON output
+              resultsContent.innerHTML = `<pre>${escapeHtml(JSON.stringify(data, null, 2))}</pre>`;
+              resultCount.textContent = "";
+            } else {
+              // Table format
+              currentPage = 1;
+              displayResults(data, resultsContent, resultCount);
+            }
+          }
+        } catch (error) {
+          resultsContent.innerHTML = `
+            <div class="error">
+              <strong>Error:</strong> ${escapeHtml(error.message)}
+            </div>
+          `;
+          resultCount.textContent = "";
+        }
+      }
+
+      function displayResults(data, container, countElement) {
+        if (data.results && data.results.bindings) {
+          allResults = data.results.bindings;
+          const vars = data.head.vars;
+
+          if (allResults.length === 0) {
+            container.innerHTML =
+              '<p style="color: #a0a0a0;">No results found.</p>';
+            countElement.textContent = "0 results";
+            return;
+          }
+
+          countElement.textContent = `${allResults.length} result${
+            allResults.length !== 1 ? "s" : ""
+          }`;
+
+          renderPage(vars, container);
+        } else if (data.boolean !== undefined) {
+          // ASK query result
+          container.innerHTML = `<p style="font-size: 1.5em; color: #c2a14d;">Result: <strong>${
+            data.boolean ? "TRUE" : "FALSE"
+          }</strong></p>`;
+          countElement.textContent = "";
+        } else {
+          container.innerHTML = `<pre>${escapeHtml(
+            JSON.stringify(data, null, 2)
+          )}</pre>`;
+          countElement.textContent = "";
+        }
+      }
+
+      function renderPage(vars, container) {
+        const totalPages = Math.ceil(allResults.length / itemsPerPage);
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        const endIndex = Math.min(startIndex + itemsPerPage, allResults.length);
+        const pageResults = allResults.slice(startIndex, endIndex);
+
+        let html = '<div class="table-container"><table><thead><tr>';
+        vars.forEach((v) => {
+          html += `<th>${escapeHtml(v)}</th>`;
+        });
+        html += "</tr></thead><tbody>";
+
+        pageResults.forEach((binding) => {
+          html += "<tr>";
+          vars.forEach((v) => {
+            const value = binding[v];
+            if (value) {
+              html += "<td>";
+              if (value.type === "uri") {
+                const uri = value.value;
+                if (
+                  uri.startsWith(
+                    "http://tolkiengateway.semanticweb.org/resource/"
+                  )
+                ) {
+                  const entityName = uri.replace(
+                    "http://tolkiengateway.semanticweb.org/resource/",
+                    ""
+                  );
+                  const displayName = decodeURIComponent(
+                    entityName.replace(/_/g, " ")
+                  );
+                  html += `<a href="/resource/${entityName}" target="_blank" title="${escapeHtml(
+                    displayName
+                  )}">${escapeHtml(displayName)}</a>`;
+                } else {
+                  html += `<a href="${escapeHtml(
+                    uri
+                  )}" target="_blank" title="${escapeHtml(uri)}">${escapeHtml(
+                    uri
+                  )}</a>`;
+                }
+              } else {
+                html += `<span title="${escapeHtml(value.value)}">${escapeHtml(
+                  value.value
+                )}</span>`;
+                if (value["xml:lang"]) {
+                  html += ` <span style="color: #c2a14d;">@${value["xml:lang"]}</span>`;
+                }
+              }
+              html += "</td>";
+            } else {
+              html += "<td>-</td>";
+            }
+          });
+          html += "</tr>";
+        });
+
+        html += "</tbody></table></div>";
+
+        // Add pagination controls
+        if (totalPages > 1) {
+          html += '<div class="pagination">';
+          html += `<div class="pagination-info">Showing ${
+            startIndex + 1
+          }-${endIndex} of ${allResults.length}</div>`;
+          html += '<div class="pagination-controls">';
+          html += `<button onclick="goToPage(1)" ${
+            currentPage === 1 ? "disabled" : ""
+          }>First</button>`;
+          html += `<button onclick="goToPage(${currentPage - 1})" ${
+            currentPage === 1 ? "disabled" : ""
+          }>Previous</button>`;
+          html += `<span style="color: #a0a0a0;">Page</span>`;
+          html += `<input type="number" class="page-input" value="${currentPage}" min="1" max="${totalPages}" onchange="goToPage(parseInt(this.value))" />`;
+          html += `<span style="color: #a0a0a0;">of ${totalPages}</span>`;
+          html += `<button onclick="goToPage(${currentPage + 1})" ${
+            currentPage === totalPages ? "disabled" : ""
+          }>Next</button>`;
+          html += `<button onclick="goToPage(${totalPages})" ${
+            currentPage === totalPages ? "disabled" : ""
+          }>Last</button>`;
+          html += "</div></div>";
+        }
+
+        container.innerHTML = html;
+      }
+
+      function goToPage(page) {
+        const totalPages = Math.ceil(allResults.length / itemsPerPage);
+        if (page < 1 || page > totalPages) return;
+
+        currentPage = page;
+        const vars = Object.keys(allResults[0] || {});
+        const container = document.getElementById("resultsContent");
+        
+        // Get the actual variable names from the first result
+        const firstResult = allResults[0];
+        const actualVars = firstResult ? Object.keys(firstResult) : [];
+        
+        renderPage(actualVars, container);
+      }
+
+      function escapeHtml(text) {
+        const div = document.createElement("div");
+        div.textContent = text;
+        return div.innerHTML;
+      }
+
+      // Allow Ctrl+Enter to execute query
+      document
+        .getElementById("queryInput")
+        .addEventListener("keydown", function (e) {
+          if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
+            executeQuery();
+          }
+        });
+    </script>
+  </body>
+</html>

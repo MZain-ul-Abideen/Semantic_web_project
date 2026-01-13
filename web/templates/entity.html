@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Merriweather:wght@300;400;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <title>{{ entity_name }} - Tolkien Gateway KG</title>
+
+    <style>
+      body {
+        font-family: "Merriweather", serif;
+        margin: 0;
+        padding: 0;
+        background-color: #0f1411;
+        color: #e6e6e6;
+        min-height: 100vh;
+      }
+
+      header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      header h1 {
+        font-family: "Cinzel", serif;
+        color: #e9f3edff;
+        margin: 0;
+        font-size: 1.8em;
+        border: none;
+        padding-bottom: 0;
+      }
+
+      .header-container {
+        background-color: #1b2320;
+        border-radius: 10px;
+        max-width: 1000px;
+        margin: 60px auto;
+        padding: 20px 48px;
+        border: 1px solid #2c3a34;
+      }
+
+      .container {
+        max-width: 1000px;
+        margin: 60px auto;
+        background-color: #1b2320;
+        border-radius: 14px;
+        padding: 48px;
+        box-shadow: 0 20px 45px rgba(0, 0, 0, 0.6);
+        border: 1px solid #2c3a34;
+      }
+
+      .home-link {
+        background-color: #c2a14d;
+        color: #0f1411;
+        padding: 10px 20px;
+        border-radius: 6px;
+        text-decoration: none;
+        font-weight: bold;
+        transition: background-color 0.2s;
+      }
+
+      .home-link:hover {
+        background-color: #d4b360;
+      }
+
+      h1,
+      h2 {
+        font-family: "Cinzel", serif;
+        color: #e9f3ed;
+        letter-spacing: 0.05em;
+      }
+
+      h1 {
+        margin-top: 0;
+        font-size: 2.4em;
+        border-bottom: 3px solid #c2a14d;
+        padding-bottom: 12px;
+      }
+
+      h2 {
+        margin-top: 40px;
+        border-left: 4px solid #c2a14d;
+        padding-left: 12px;
+      }
+
+      .entity-uri {
+        color: #a0a0a0;
+        font-size: 0.9em;
+        margin-bottom: 30px;
+        word-break: break-all;
+      }
+
+      .entity-uri a {
+        color: #8fbfa5;
+        text-decoration: none;
+      }
+
+      .entity-uri a:hover {
+        color: #c2a14d;
+      }
+
+      .classes {
+        background-color: #16201c;
+        padding: 14px;
+        border-radius: 8px;
+        margin-bottom: 30px;
+        border: 1px solid #2c3a34;
+      }
+
+      .class-tag {
+        display: inline-block;
+        background-color: #23312b;
+        color: #e6e6e6;
+        padding: 6px 12px;
+        margin: 4px;
+        border-radius: 6px;
+        font-size: 0.9em;
+        font-family: "Cinzel", serif;
+        border: 1px solid #2c3a34;
+      }
+
+      .image-container {
+        text-align: center;
+        margin: 30px 0;
+      }
+
+      .image-container img {
+        max-width: 400px;
+        max-height: 400px;
+        border-radius: 12px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
+        border: 1px solid #2c3a34;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        background-color: #16201c;
+        margin-bottom: 20px;
+        border-radius: 10px;
+        overflow: hidden;
+      }
+
+      th,
+      td {
+        padding: 14px;
+        text-align: left;
+        border-bottom: 1px solid #2c3a34;
+      }
+
+      th {
+        background-color: #23312b;
+        color: #c2a14d;
+        font-family: "Cinzel", serif;
+      }
+
+      tr:hover {
+        background-color: #1f2a25;
+      }
+
+      a {
+        color: #8fbfa5;
+        text-decoration: none;
+      }
+
+      a:hover {
+        color: #c2a14d;
+      }
+
+      .lang-tag {
+        color: #a0a0a0;
+        font-size: 0.85em;
+        font-style: italic;
+      }
+
+      .section {
+        margin-bottom: 40px;
+      }
+
+      .external-link {
+        background-color: #16201c;
+        padding: 14px;
+        border-left: 4px solid #c2a14d;
+        margin: 10px 0;
+        border-radius: 6px;
+        border: 1px solid #2c3a34;
+      }
+
+      .footer {
+        margin-top: 50px;
+        text-align: center;
+        color: #a0a0a0;
+        font-size: 0.9em;
+        padding-top: 30px;
+        border-top: 1px solid #2c3a34;
+      }
+
+      .footer a {
+        color: #8fbfa5;
+        margin: 0 8px;
+      }
+
+      .footer a:hover {
+        color: #c2a14d;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="header-container">
+      <header>
+        <h1>Infobox</h1>
+        <a href="/" class="home-link">← Back to Home</a>
+      </header>
+    </div>
+    <div class="container">
+      <h1>{{ entity_name }}</h1>
+
+      <p class="entity-uri">
+        URI:
+        <a href="{{ entity_uri }}">{{ entity_uri }}</a>
+      </p>
+
+      {% if classes %}
+      <div class="classes">
+        <strong>Classes:</strong>
+        {% for class in classes %}
+        <span class="class-tag">{{ class }}</span>
+        {% endfor %}
+      </div>
+      {% endif %} {% if image_url %}
+      <div class="image-container">
+        <img src="{{ image_url }}" alt="{{ entity_name }}" />
+      </div>
+      {% endif %}
+
+      <div class="section">
+        <h2>Properties</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Property</th>
+              <th>Value</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for prop in properties %}
+            <tr>
+              <td><strong>{{ prop.property }}</strong></td>
+              <td>{{ prop.value | safe }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      {% if inverse_properties %}
+      <div class="section">
+        <h2>Incoming Links</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Entity</th>
+              <th>Relation</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for prop in inverse_properties %}
+            <tr>
+              <td>{{ prop.subject | safe }}</td>
+              <td><strong>{{ prop.property }}</strong></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% endif %} {% if same_as_links %}
+      <div class="section">
+        <h2>External Links (owl:sameAs)</h2>
+        {% for link in same_as_links %}
+        <div class="external-link">
+          <strong>{{ link.property }}:</strong> {{ link.value | safe }}
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %} {% if description %}
+      <div class="section">
+        <h2>Description</h2>
+        <p>{{ description }}</p>
+      </div>
+      {% endif %}
+
+      <div class="footer">
+        <p>Tolkien Gateway Knowledge Graph | Linked Data Interface</p>
+        <p>
+          <a href="/">Home</a> |
+          <a href="/resource/{{ entity_path }}?format=turtle"
+            >View as Turtle (RDF)</a
+          >
+        </p>
+      </div>
+    </div>
+  </body>
+</html>
