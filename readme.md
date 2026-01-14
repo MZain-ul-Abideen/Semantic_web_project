@@ -23,7 +23,12 @@ This project extracts data from [Tolkien Gateway](https://tolkiengateway.net/) a
 ```bash
 # Create and activate virtual environment
 python -m venv venv
-source venv/bin/activate
+
+# Linux OS
+source venv/bin/activate 
+
+# Window OS
+venv\Scripts\Activate.ps1
 
 # Install dependencies
 pip install -r requirements.txt
@@ -41,7 +46,7 @@ pip install -r requirements.txt
 │   ├── Step1_parse_all_pages.py
 │   ├── Step2_rdf_generator.py
 │   ├── Step3_shacl_generator.py
-│   ├── Step4_enrich_with_metw.py
+│   ├── Step4_enrich_with_metw_and_csv.py
 │   ├── Step5_add_multilingual_labels.py
 │   ├── Step6_align_external_kgs.py
 │   └── Step7_sparql_queries.py
@@ -69,11 +74,30 @@ pip install -r requirements.txt
 │   │   ├── tolkien_shapes.ttl
 │   │   └── validation_report.ttl
 │   └── external/             # External datasets
-│       └── cards.json
+│       ├── cards.json
+│       └── lotr_characters.csv
 └── requirements.txt
 ```
 
 ## Execution Pipeline
+
+##### Setup Apache Fuseki
+
+```bash
+# Download and extract
+wget https://dlcdn.apache.org/jena/binaries/apache-jena-fuseki-5.2.0.tar.gz
+tar -xzf apache-jena-fuseki-5.2.0.tar.gz
+cd apache-jena-fuseki-5.2.0
+
+# Start server
+
+# Linux OS
+./fuseki-server
+
+# window OS
+.\fuseki-server.bat --update --mem /tolkien
+
+```
 
 ### Phase 1: Data Acquisition
 
@@ -82,7 +106,7 @@ Extract character data from Tolkien Gateway wiki:
 ```bash
 python src/extract/scrape_characters_categories.py
 python src/extract/scrape_all_characters.py
-python src/extract/scrape_character_json.py
+python src/extract/scrape_characters_json.py
 ```
 
 Outputs: `data/raw/json_pages.json` with 1,728 pages
@@ -107,7 +131,8 @@ python parsers/Step2_rdf_generator.py
 
 Outputs: `data/rdf/tolkien_kg.ttl` (27,149 triples)
 
-##### Example output:
+<!-- ##### Example output -->
+
 ```turtle
 tgr:Gandalf a schema:Person ;
     schema:name "Gandalf"@en ;
@@ -131,7 +156,7 @@ Outputs: `data/shacl/tolkien_shapes.ttl` and validation report
 Add multilingual labels and external alignments:
 
 ```bash
-python parsers/Step4_enrich_with_metw.py
+python parsers/Step4_enrich_with_metw_and_csv.py
 python parsers/Step5_add_multilingual_labels.py
 python parsers/Step6_align_external_kgs.py
 ```
@@ -140,7 +165,8 @@ Final output: `data/rdf/tolkien_kg_aligned.ttl` (~27,194 triples)
 
 ### Phase 6: Triplestore & SPARQL
 
-##### Setup Apache Fuseki:
+##### Setup Apache Fuseki
+
 ```bash
 # Download and extract
 wget https://dlcdn.apache.org/jena/binaries/apache-jena-fuseki-5.2.0.tar.gz
@@ -148,12 +174,18 @@ tar -xzf apache-jena-fuseki-5.2.0.tar.gz
 cd apache-jena-fuseki-5.2.0
 
 # Start server
+
+# Linux OS
 ./fuseki-server
+
+# window OS
+.\fuseki-server.bat --update --mem /tolkien
+
 ```
 
-##### Create Dataset & Load Data:
+##### Create Dataset & Load Data
 
-1. Open Fuseki Web UI: http://localhost:3030
+1. Open Fuseki Web UI: <http://localhost:3030>
 2. Create dataset:
    - Click "Manage datasets" → "Add new dataset"
    - Name: `tolkienkg`
@@ -165,13 +197,15 @@ cd apache-jena-fuseki-5.2.0
 
 ##### Verify Data Loaded
 
-Query in Fuseki UI (http://localhost:3030):
+Query in Fuseki UI (<http://localhost:3030>):
+
 ```sparql
 SELECT (COUNT(*) AS ?count) WHERE { ?s ?p ?o . }
 ```
+
 Expected: ~27,199 triples
 
-##### Run SPARQL queries:
+##### Run SPARQL queries
 
 ```bash
 python parsers/Step7_sparql_queries.py
@@ -179,28 +213,31 @@ python parsers/Step7_sparql_queries.py
 
 ### Phase 7: Linked Data Interface
 
-##### Start Flask application:
+##### Start Flask application
 
 ```bash
 python web/app.py
 ```
 
-Server runs on: http://localhost:5000
+Server runs on: <http://localhost:5000>
 
-##### Features:
+##### Features
+
 - Content negotiation (HTML for browsers, Turtle for machines)
 - Rich HTML display with entity details and relationships
 - SPARQL-powered real-time queries
 - External links to DBpedia
 
-##### Example entities:
-- http://localhost:5000/resource/Gandalf
-- http://localhost:5000/resource/Frodo_Baggins
-- http://localhost:5000/resource/Aragorn
+##### Example entities
+
+- <http://localhost:5000/resource/Gandalf>
+- <http://localhost:5000/resource/Frodo_Baggins>
+- <http://localhost:5000/resource/Aragorn>
 
 ## Example SPARQL Queries
 
-##### Find all children of Elrond:
+##### Find all children of Elrond
+
 ```sparql
 PREFIX schema: <http://schema.org/>
 
@@ -211,7 +248,8 @@ SELECT ?child ?name WHERE {
 }
 ```
 
-##### Characters aligned with DBpedia:
+##### Characters aligned with DBpedia
+
 ```sparql
 PREFIX owl: <http://www.w3.org/2002/07/owl#>
 PREFIX schema: <http://schema.org/>
@@ -258,12 +296,14 @@ SELECT ?name ?dbpedia WHERE {
 ## Troubleshooting
 
 **Fuseki won't start:**
+
 ```bash
 lsof -i :3030  # Check if port is in use
 ./fuseki-server --port=3031  # Use different port
 ```
 
 **Flask connection errors:**
+
 ```bash
 curl http://localhost:3030/$/ping  # Verify Fuseki is running
 curl http://localhost:3030/$/datasets  # Check dataset exists

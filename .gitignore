@@ -1,4 +1,13 @@
+# Ignore everything in data by default
 data/*
-!data/.gitkeep
 
+# But keep folder structure
+!data/.gitkeep
+!data/*/.gitkeep
+
+# Allow external data to be versioned
+!data/external/
+!data/external/**
+
+# Ignore virtual environment
 venv/
