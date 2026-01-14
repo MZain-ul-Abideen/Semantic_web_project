@@ -9,5 +9,9 @@ data/*
 !data/external/
 !data/external/**
 
+# Allow raw data to be versioned
+!data/raw/
+!data/raw/**
+
 # Ignore virtual environment
 venv/
