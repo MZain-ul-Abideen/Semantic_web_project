@@ -1,0 +1,13 @@
+{
+  "total_pages": 1735,
+  "successful": 1735,
+  "failed": 0,
+  "with_infobox": 1218,
+  "without_infobox": 517,
+  "infobox_types": {
+    "infobox character": 1205,
+    "character": 6,
+    "Infoboxes": 7
+  },
+  "failed_pages": []
+}

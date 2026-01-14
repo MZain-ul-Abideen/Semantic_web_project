@@ -1,0 +1,31 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix schema1: <http://schema.org/> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix shape: <http://tolkiengateway.semanticweb.org/shape/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+shape:CharacterShape a sh:NodeShape ;
+    rdfs:label "Character Shape" ;
+    rdfs:comment "Validation shape for Tolkien Gateway characters" ;
+    sh:property [ sh:datatype xsd:string ;
+            sh:in ( "Male" "Female" "Unknown" ) ;
+            sh:path schema1:gender ],
+        [ sh:minCount 1 ;
+            sh:nodeKind sh:Literal ;
+            sh:path schema1:name ] ;
+    sh:targetClass schema1:Person .
+
+shape:PlaceShape a sh:NodeShape ;
+    rdfs:label "Place Shape" ;
+    sh:property [ sh:minCount 1 ;
+            sh:nodeKind sh:Literal ;
+            sh:path schema1:name ] ;
+    sh:targetClass schema1:Place .
+
+shape:ThingShape a sh:NodeShape ;
+    rdfs:label "Thing Shape" ;
+    sh:property [ sh:minCount 1 ;
+            sh:path schema1:name ] ;
+    sh:targetClass schema1:Thing .
+
